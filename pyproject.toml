@@ -1,0 +1,53 @@
+[project]
+name = "custom-shape-jigsaw"
+version = "0.1.0"
+description = "Headless Python port of the CustomShapeJigsawJs procedural jigsaw generator"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "svgelements>=1.9",
+    "numpy>=1.24",
+    "typer>=0.12",
+    "pydantic>=2.5",
+]
+
+[project.scripts]
+custom-shape-jigsaw = "custom_shape_jigsaw.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/proceduraljigsaw/CustomShapeJigsawJs"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/custom_shape_jigsaw"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+# Helpers for the Node-based golden-capture harness (Track 2 parity tests).
+# The Node runtime itself is not managed by uv; install it separately.
+golden = []
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# typer's idiom is `arg: T = typer.Option(...)`, which B008 flags as a call in a default.
+"src/custom_shape_jigsaw/cli.py" = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "golden: Track 2 bit-exact-vs-JS tests requiring pre-minted goldens",
+]
